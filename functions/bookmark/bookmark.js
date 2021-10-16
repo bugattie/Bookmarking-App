@@ -1,4 +1,6 @@
 const { ApolloServer, gql } = require("apollo-server-lambda")
+const faunadb = require("faunadb"),
+  q = faunadb.query
 
 const typeDefs = gql`
   type Query {
@@ -8,6 +10,9 @@ const typeDefs = gql`
     id: ID!
     url: String!
     title: String!
+  }
+  type Mutation {
+    addBookmark(url: String!, title: String!): Bookmark
   }
 `
 
@@ -19,7 +24,56 @@ const bookmarks = [
 
 const resolvers = {
   Query: {
-    bookmarks: () => bookmarks,
+    bookmarks: async (root, args, context) => {
+      try {
+        const client = new faunadb.Client({
+          secret: process.env.FAUNADB_SECRET_KEY,
+          domain: "db.us.fauna.com",
+          scheme: "https",
+        })
+
+        const result = await client.query(
+          q.Map(
+            q.Paginate(q.Match(q.Index("bookmarkIndex"))),
+            q.Lambda(x => q.Get(x))
+          )
+        )
+
+        return result.data.map(bookmark => {
+          return {
+            id: bookmark.ref.id,
+            title: bookmark.data.title,
+            url: bookmark.data.url,
+          }
+        })
+      } catch (err) {
+        console.log("**** Error ****", err)
+      }
+    },
+  },
+
+  Mutation: {
+    addBookmark: async (_, { url, title }) => {
+      try {
+        const client = new faunadb.Client({
+          secret: process.env.FAUNADB_SECRET_KEY,
+          domain: "db.us.fauna.com",
+          scheme: "https",
+        })
+        const result = await client.query(
+          q.Create(q.Collection("bookmark"), {
+            data: {
+              title,
+              url,
+            },
+          })
+        )
+
+        return result.data
+      } catch (err) {
+        console.log("**** Error ****", err)
+      }
+    },
   },
 }
 
