@@ -13,14 +13,9 @@ const typeDefs = gql`
   }
   type Mutation {
     addBookmark(url: String!, title: String!): Bookmark
+    deleteBookmark(id: ID!): Bookmark
   }
 `
-
-const bookmarks = [
-  { id: 1, url: "www.google.com", title: "Google" },
-  { id: 2, url: "www.twitter.com", title: "Twitter" },
-  { id: 3, url: "www.github.com", title: "Github" },
-]
 
 const resolvers = {
   Query: {
@@ -68,8 +63,21 @@ const resolvers = {
             },
           })
         )
-
         return result.data
+      } catch (err) {
+        console.log("**** Error ****", err)
+      }
+    },
+
+    deleteBookmark: async (_, { id }) => {
+      try {
+        const client = new faunadb.Client({
+          secret: process.env.FAUNADB_SECRET_KEY,
+          domain: "db.us.fauna.com",
+          scheme: "https",
+        })
+
+        await client.query(q.Delete(q.Ref(q.Collection("bookmark"), id)))
       } catch (err) {
         console.log("**** Error ****", err)
       }

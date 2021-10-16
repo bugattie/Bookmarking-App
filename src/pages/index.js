@@ -9,9 +9,10 @@ import CustomCard from "../components/card"
 import "../styles/global.scss"
 import * as homeStyles from "../styles/home.module.scss"
 
-const bookmarkQuery = gql`
+export const bookmarkQuery = gql`
   {
     bookmarks {
+      id
       title
       url
     }
@@ -90,7 +91,14 @@ const Home = () => {
         <div className={homeStyles.main_container}>
           <h2>My Bookmarks</h2>
           {data.bookmarks.map(bookmark => {
-            return <CustomCard title={bookmark.title} url={bookmark.url} />
+            return (
+              <CustomCard
+                id={bookmark.id}
+                title={bookmark.title}
+                url={bookmark.url}
+                key={bookmark.title}
+              />
+            )
           })}
         </div>
       </div>
