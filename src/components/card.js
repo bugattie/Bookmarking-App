@@ -1,5 +1,12 @@
 import React from "react"
-import { Box, Button, Card, CardActions, CardContent } from "@material-ui/core"
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Link,
+} from "@material-ui/core"
 
 import * as homeStyles from "../styles/home.module.scss"
 import gql from "graphql-tag"
@@ -40,9 +47,11 @@ const CustomCard = ({ id, url, title }) => {
           </div>
         </CardContent>
         <CardActions>
-          <Button variant="contained" className={homeStyles.btn_secondary}>
-            Visit the Bookmark
-          </Button>
+          <Link href={url} target="_blank">
+            <Button variant="contained" className={homeStyles.btn_secondary}>
+              Visit the Bookmark
+            </Button>
+          </Link>
           <Button
             variant="contained"
             color="secondary"

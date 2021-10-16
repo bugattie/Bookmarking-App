@@ -44,7 +44,8 @@ $main-theme: #116466;
 }
 
 .main_section {
-  background-color: #d1e8e2 !important;
+  background-color: $light-blue !important;
+  height: auto;
 }
 .main_container {
   max-width: 50rem;
