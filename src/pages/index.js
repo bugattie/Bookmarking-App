@@ -56,7 +56,7 @@ const Home = () => {
   if (loading) {
     return (
       <div className={homeStyles.progress}>
-        <CircularProgress color="secondary" />
+        <CircularProgress color="#116466" />
       </div>
     )
   }
